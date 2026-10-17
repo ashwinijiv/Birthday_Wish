@@ -217,7 +217,7 @@
     .surprise-reveal {
       position: relative;
       isolation: isolate;
-      width: min(100%, 260px, calc(45dvh * 1080 / 2373));
+      width: min(100%, 300px, calc(45dvh * 1080 / 2373));
       aspect-ratio: 1080 / 2373;
       margin: 8px auto 12px;
     }
@@ -225,6 +225,62 @@
     #celebration-title,
     #celebration .surprise-reveal {
       transform: translateY(-8px);
+    }
+
+    #celebration .surprise-reveal.is-opening {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      width: 100vw;
+      height: 100dvh;
+      max-width: none;
+      aspect-ratio: auto;
+      margin: 0;
+      transform: none;
+      background: #17122f;
+    }
+
+    #celebration.is-opening {
+      animation: none;
+      transform: none;
+      backdrop-filter: none;
+    }
+
+    #celebration #back-button {
+      position: relative;
+      z-index: 6;
+    }
+
+    .photo-back {
+      display: none;
+      position: absolute;
+      top: max(16px, env(safe-area-inset-top));
+      left: max(16px, env(safe-area-inset-left));
+      z-index: 8;
+      width: 46px;
+      min-height: 46px;
+      padding: 0;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, .32);
+      border-radius: 50%;
+      color: var(--ink);
+      background: rgba(255, 255, 255, .1);
+      box-shadow: none;
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .photo-back:hover {
+      transform: translateX(-2px);
+      filter: brightness(1.15);
+    }
+
+    .surprise-reveal.is-opening .photo-back {
+      display: grid;
+    }
+
+    #celebration.is-opening #back-button {
+      display: none;
     }
 
     .question {
@@ -710,7 +766,7 @@
         max-height: 100%;
       }
       .surprise-reveal {
-        width: min(100%, 260px, calc(60dvh * 1080 / 2373));
+        width: min(100%, 300px, calc(60dvh * 1080 / 2373));
       }
     }
 
@@ -724,7 +780,7 @@
       .memory-track { padding-top: 18px; padding-bottom: 8px; }
       .memory-item img { height: min(34dvh, 260px); }
       .surprise-reveal {
-        width: min(100%, 260px, calc(40dvh * 1080 / 2373));
+        width: min(100%, 300px, calc(40dvh * 1080 / 2373));
         margin-top: 4px;
         margin-bottom: 8px;
       }
@@ -756,7 +812,7 @@
       .memory-track { padding-top: 14px; padding-bottom: 6px; }
       .memory-item img { height: 24dvh; }
       .surprise-reveal {
-        width: min(100%, 260px, calc(37dvh * 1080 / 2373));
+        width: min(100%, 300px, calc(37dvh * 1080 / 2373));
         margin-top: 2px;
         margin-bottom: 4px;
       }
@@ -808,6 +864,7 @@
       <h1 id="celebration-title">Surprise</h1>
       <div class="surprise-reveal" id="surprise-reveal">
         <img class="birthday-message-image" src="1.jpg" alt="A personalized Happy Birthday collage with a photo and birthday decorations" aria-hidden="true">
+        <button class="button photo-back" id="photo-back-button" type="button" aria-label="Back to surprise choices" title="Back to surprise choices">←</button>
         <div class="cake-wrap">
         <svg class="birthday-cake" viewBox="0 0 260 220" role="img" aria-labelledby="cake-title cake-desc">
           <title id="cake-title">A birthday cake with dancing candle flames</title>
@@ -1061,6 +1118,11 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
+    document.querySelector("#photo-back-button").addEventListener("click", () => {
+      resetCakeReveal();
+      document.querySelector("#open-memory-lane-button").focus({ preventScroll: true });
+    });
+
     function startCakeReveal() {
       resetCakeReveal();
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1076,13 +1138,15 @@
           cakeWrap.append(piece);
         }
         birthdayMessageImage.setAttribute("aria-hidden", "false");
-        requestAnimationFrame(() => surpriseReveal.classList.add("is-opening"));
+        celebration.classList.add("is-opening");
+        surpriseReveal.classList.add("is-opening");
         launchConfetti();
       }, reducedMotion ? 50 : 1400);
     }
 
     function resetCakeReveal() {
       window.clearTimeout(cakeRevealTimer);
+      celebration.classList.remove("is-opening");
       surpriseReveal.classList.remove("is-opening");
       cakeWrap.querySelectorAll(".cake-split-piece").forEach((piece) => piece.remove());
       birthdayMessageImage.setAttribute("aria-hidden", "true");
