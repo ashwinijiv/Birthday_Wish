@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17122f">
+  <title>A Birthday Surprise</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      --ink: #fffaf1;
+      --muted: #d2cce5;
+      --pink: #ff76a8;
+      --yellow: #ffd66b;
+      --panel: rgba(31, 25, 59, 0.88);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      min-height: 0;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      padding: clamp(8px, 2.5vh, 20px) clamp(12px, 4vw, 24px);
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 15% 12%, rgba(111, 81, 180, .52), transparent 38%),
+        radial-gradient(ellipse at 88% 82%, rgba(242, 82, 151, .2), transparent 32%),
+        #17122f;
+    }
+
+    body::before,
+    body::after {
+      position: fixed;
+      z-index: -1;
+      width: 14px;
+      height: 14px;
+      content: "";
+      border-radius: 50%;
+      background: var(--yellow);
+      box-shadow: 8vw 20vh 0 -3px #ff76a8, 18vw 78vh 0 -4px #83e6df,
+        35vw 12vh 0 -5px #fffaf1, 53vw 88vh 0 -3px #ff76a8,
+        70vw 17vh 0 -4px #ffd66b, 88vw 63vh 0 -3px #83e6df;
+      opacity: .78;
+      animation: twinkle 3s ease-in-out infinite alternate;
+    }
+
+    body::before { top: 8%; left: 5%; }
+    body::after { right: 7%; bottom: 8%; animation-delay: -1.4s; }
+
+    button, input { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+
+    .shell {
+      width: min(100%, 540px);
+      height: 100%;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: clamp(4px, 1.4vh, 12px);
+      text-align: center;
+    }
+
+    .brand {
+      margin: 0;
+      color: var(--yellow);
+      font-size: .8rem;
+      font-weight: 800;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+
+    .card {
+      overflow: hidden;
+      min-height: 0;
+      padding: clamp(14px, 6vw, 40px);
+      border: 1px solid rgba(255, 255, 255, .15);
+      border-radius: 28px;
+      background: var(--panel);
+      box-shadow: 0 24px 90px rgba(0, 0, 0, .3);
+      backdrop-filter: blur(12px);
+      animation: arrive .7s cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    .sparkle {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--yellow);
+      font-size: 2rem;
+      animation: bob 2s ease-in-out infinite;
+    }
+
+    h1, h2, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 12px;
+      font-size: clamp(2rem, 8vw, 3.2rem);
+      line-height: 1.04;
+      letter-spacing: -.045em;
+    }
+
+    h1:focus,
+    h1:focus-visible {
+      outline: none;
+    }
+
+    h1 span { color: var(--pink); }
+
+    .intro {
+      max-width: 38ch;
+      margin: 0 auto 26px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .code-form {
+      display: grid;
+      gap: 12px;
+      text-align: left;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: .9rem;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      min-height: 54px;
+      padding: 0 16px;
+      color: var(--ink);
+      border: 1px solid rgba(255, 255, 255, .24);
+      border-radius: 14px;
+      outline: none;
+      background: rgba(12, 9, 28, .55);
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    input:focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 4px rgba(255, 118, 168, .16);
+    }
+
+    .button {
+      min-height: 52px;
+      padding: 13px 21px;
+      color: #241632;
+      border: 0;
+      border-radius: 999px;
+      background: var(--yellow);
+      box-shadow: 0 8px 22px rgba(255, 214, 107, .2);
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform .18s, filter .18s, box-shadow .18s;
+    }
+
+    .button:hover { transform: translateY(-2px); filter: brightness(1.06); }
+    .button:active { transform: translateY(1px) scale(.98); }
+    .button:focus-visible { outline: 3px solid white; outline-offset: 3px; }
+
+    .button.evasive {
+      position: fixed;
+      z-index: 3;
+      width: auto;
+      max-width: calc(100vw - 24px);
+      transition: left .18s ease-out, top .18s ease-out, filter .18s, box-shadow .18s;
+    }
+
+    .button.primary {
+      color: white;
+      background: linear-gradient(110deg, #ff659b, #c871ff);
+      box-shadow: 0 9px 25px rgba(219, 92, 183, .25);
+    }
+
+    .error {
+      min-height: 1.2em;
+      margin: 0;
+      color: #ffacc2;
+      font-size: .88rem;
+    }
+
+    .hidden { display: none !important; }
+
+    .birthday-card { position: relative; }
+
+    .birthday-card h1 { margin-bottom: 16px; }
+
+    .birthday-copy {
+      margin: 0 auto 26px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .birthday-message-image {
+      display: block;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      object-fit: contain;
+      border: 3px solid rgba(255, 255, 255, .8);
+      border-radius: 16px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, .24);
+      opacity: 0;
+      transform: scale(.82);
+      z-index: 0;
+    }
+
+    .surprise-reveal {
+      position: relative;
+      isolation: isolate;
+      width: min(100%, 260px, calc(45dvh * 1080 / 2373));
+      aspect-ratio: 1080 / 2373;
+      margin: 8px auto 12px;
+    }
+
+    #celebration-title,
+    #celebration .surprise-reveal {
+      transform: translateY(-8px);
+    }
+
+    .question {
+      margin-bottom: 18px;
+      color: var(--yellow);
+      font-size: 1.14rem;
+      font-weight: 800;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .button.secondary {
+      color: var(--ink);
+      border: 1px solid rgba(255, 255, 255, .28);
+      background: rgba(255, 255, 255, .08);
+      box-shadow: none;
+    }
+
+    #not-yet-button {
+      color: #251332;
+      border: 2px solid #fff3c4;
+      background: linear-gradient(135deg, #ffe66d, #ff9f43);
+      box-shadow: 0 0 0 3px rgba(255, 230, 109, .18), 0 8px 24px rgba(255, 159, 67, .4);
+    }
+
+    #not-yet-button:hover {
+      filter: brightness(1.12);
+      box-shadow: 0 0 0 5px rgba(255, 230, 109, .25), 0 10px 30px rgba(255, 159, 67, .58);
+    }
+
+    .reaction {
+      margin-top: 25px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255, 255, 255, .14);
+      animation: arrive .45s ease both;
+    }
+
+    .reaction h2 {
+      margin-bottom: 8px;
+      font-size: 1.35rem;
+    }
+
+    .reaction p {
+      margin-bottom: 14px;
+      color: var(--muted);
+    }
+
+    .character {
+      display: block;
+      width: min(100%, 255px);
+      height: auto;
+      margin: 4px auto 0;
+      filter: drop-shadow(0 14px 26px rgba(0, 0, 0, .24));
+    }
+
+    #memories,
+    #dreams {
+      color: #332843;
+      border-color: rgba(255, 255, 255, .7);
+      background:
+        radial-gradient(#edcdbb 1px, transparent 1px) 0 0 / 16px 16px,
+        #fff8ed;
+    }
+
+    #memories h1,
+    #dreams h1 { color: #332843; }
+    #memories h1 span,
+    #dreams h1 span { color: #d14c7b; }
+    #memories .birthday-copy,
+    #dreams .birthday-copy { color: #695b70; }
+    #memories .page-back,
+    #dreams .page-back { margin-bottom: 4px; }
+    #memories h1,
+    #dreams h1 { margin-bottom: 8px; }
+
+    #memories h1 {
+      color: #d14c7b;
+      font-size: clamp(2rem, 8vw, 3.2rem);
+    }
+
+    #dreams h1 {
+      font-size: clamp(.78rem, 3.4vw, 1.1rem);
+    }
+
+    #dreams h1 .dream-title-highlight {
+      color: #d14c7b;
+      font-size: 1.6em;
+    }
+
+    #dreams h1 .dream-title-support {
+      color: #332843;
+      white-space: nowrap;
+    }
+
+    .page-back {
+      display: grid;
+      width: 42px;
+      min-height: 42px;
+      margin: 0 0 14px;
+      padding: 0;
+      place-items: center;
+      color: var(--ink);
+      border: 1px solid rgba(255, 255, 255, .32);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .1);
+      box-shadow: none;
+      font-size: 1.55rem;
+      line-height: 1;
+    }
+
+    .page-back:hover {
+      transform: translateX(-2px);
+      filter: brightness(1.15);
+    }
+
+    #memories .page-back,
+    #dreams .page-back {
+      color: #fff;
+      border-color: #b52f58;
+      background: #ce466b;
+      box-shadow: 0 4px 12px rgba(101, 41, 59, .22);
+    }
+
+    #memories .page-back:hover,
+    #dreams .page-back:hover {
+      background: #b9365d;
+      box-shadow: 0 6px 16px rgba(101, 41, 59, .3);
+    }
+
+    .memory-stage {
+      position: relative;
+      overflow: hidden;
+      margin: 16px -14px 18px;
+      padding: 18px 0 14px;
+      border: 1px solid #f0cbd0;
+      border-radius: 18px;
+      background:
+        radial-gradient(#f5a8bd 2px, transparent 2.5px) 12px 13px / 48px 42px,
+        #fffdf7;
+      box-shadow: 0 10px 26px rgba(111, 58, 80, .12);
+    }
+
+    .memory-stage::before {
+      position: absolute;
+      top: 10px;
+      right: -4%;
+      left: -4%;
+      height: 22px;
+      border-bottom: 1px solid #9a6b65;
+      border-radius: 50%;
+      content: "";
+      pointer-events: none;
+    }
+
+    .memory-track {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 22px 8px 12px;
+      scroll-behavior: smooth;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .memory-track::-webkit-scrollbar { display: none; }
+
+    .memory-item {
+      flex: 0 0 min(96%, 480px);
+      min-width: 0;
+      margin: 0;
+      padding: 9px 9px 12px;
+      border: 1px solid #e9a7b3;
+      background: #fff;
+      box-shadow: 0 7px 15px rgba(78, 52, 62, .2);
+      scroll-snap-align: center;
+      transform: rotate(-1.5deg);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .memory-item:nth-child(even) { transform: rotate(1.5deg); }
+    .memory-item:hover {
+      z-index: 1;
+      box-shadow: 0 12px 22px rgba(78, 52, 62, .24);
+      transform: translateY(-4px) rotate(0);
+    }
+
+    .memory-item img {
+      display: block;
+      width: 100%;
+      height: min(42dvh, 320px);
+      aspect-ratio: 3 / 2;
+      object-fit: cover;
+      background: #f1e9e5;
+    }
+
+    .dream-placeholder {
+      display: grid;
+      width: 100%;
+      aspect-ratio: 3 / 2;
+      place-items: center;
+      border: 1px solid rgba(91, 63, 111, .15);
+    }
+
+    .dream-placeholder span {
+      font-size: clamp(3rem, 16vw, 5.5rem);
+      filter: drop-shadow(0 8px 8px rgba(51, 40, 67, .18));
+    }
+
+    .dream-place { background: linear-gradient(145deg, #c9f0ed, #8ac6d8 52%, #f7d8bb); }
+    .dream-adventure { background: linear-gradient(145deg, #ffe9a8, #ffb88d 55%, #f28bad); }
+    .dream-escape { background: linear-gradient(145deg, #d9d1ff, #b7b9ec 52%, #9ed9cb); }
+    .dream-moments { background: linear-gradient(145deg, #ffd0df, #f2a6bd 55%, #f5d78b); }
+
+    .dream-caption {
+      margin: 10px 0 0;
+      color: #695b70;
+      font-size: .95rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .memory-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 0 16px;
+    }
+
+    .memory-arrow {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      color: white;
+      border: 0;
+      border-radius: 50%;
+      background: #ce466b;
+      box-shadow: 0 3px 8px rgba(101, 41, 59, .24);
+      font-size: 1.2rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .memory-arrow:focus-visible {
+      outline: 3px solid #332843;
+      outline-offset: 3px;
+    }
+
+    .memory-count {
+      min-width: 52px;
+      color: #695b70;
+      font-size: .85rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .cake-wrap {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: min(160%, 420px);
+      margin: 0;
+      animation: cake-bob 2.8s ease-in-out infinite;
+      filter: drop-shadow(0 14px 18px rgba(70, 37, 77, .22));
+      transform: translateX(-50%);
+    }
+
+    .birthday-cake { display: block; width: 100%; height: auto; overflow: visible; }
+
+    .cake-split-piece {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .cake-split-top {
+      clip-path: inset(0 0 50% 0);
+      transform-origin: center bottom;
+    }
+
+    .cake-split-bottom {
+      clip-path: inset(50% 0 0 0);
+      transform-origin: center top;
+    }
+
+    .surprise-reveal.is-opening .cake-wrap {
+      animation: none;
+      transform: translateX(-50%);
+    }
+
+    .surprise-reveal.is-opening .birthday-cake {
+      visibility: hidden;
+    }
+
+    .surprise-reveal.is-opening .birthday-message-image {
+      animation: reveal-birthday-image .85s cubic-bezier(.16, 1, .3, 1) .18s both;
+    }
+
+    .surprise-reveal.is-opening .cake-split-top {
+      animation: split-cake-top .85s cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    .surprise-reveal.is-opening .cake-split-bottom {
+      animation: split-cake-bottom .85s cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    .cake-flame {
+      transform-box: fill-box;
+      transform-origin: center bottom;
+      animation: flame-flicker .55s ease-in-out infinite alternate;
+    }
+
+    .cake-flame:nth-of-type(2) { animation-delay: -.2s; }
+    .cake-flame:nth-of-type(3) { animation-delay: -.38s; }
+
+    .cake-sparkle {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: sparkle-pop 1.6s ease-in-out infinite alternate;
+    }
+
+    .cake-sparkle:nth-of-type(even) { animation-delay: -.8s; }
+
+    .success {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .confetti {
+      position: absolute;
+      top: -20px;
+      width: 10px;
+      height: 16px;
+      border-radius: 3px;
+      background: var(--piece-color);
+      animation: fall var(--duration) linear var(--delay) forwards;
+    }
+
+    @keyframes arrive {
+      from { opacity: 0; transform: translateY(18px) scale(.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes bob {
+      50% { transform: translateY(-6px) rotate(7deg); }
+    }
+
+    @keyframes twinkle {
+      to { opacity: .3; transform: scale(.7); }
+    }
+
+    @keyframes fall {
+      to { transform: translate3d(var(--drift), 110vh, 0) rotate(760deg); }
+    }
+
+    @keyframes cake-bob {
+      50% { transform: translate(-50%, -8px) rotate(1deg); }
+    }
+
+    @keyframes split-cake-top {
+      to { opacity: 0; transform: translateY(-115px) rotate(-12deg) scale(.82); }
+    }
+
+    @keyframes split-cake-bottom {
+      to { opacity: 0; transform: translateY(115px) rotate(9deg) scale(.82); }
+    }
+
+    @keyframes reveal-birthday-image {
+      from { opacity: 0; transform: scale(.82); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes flame-flicker {
+      from { opacity: .8; transform: scale(.9) rotate(-3deg); }
+      to { opacity: 1; transform: scale(1.1) rotate(3deg); }
+    }
+
+    @keyframes sparkle-pop {
+      from { opacity: .35; transform: scale(.7) rotate(0); }
+      to { opacity: 1; transform: scale(1.15) rotate(35deg); }
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 15px; }
+      .card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: clamp(16px, 5vw, 22px);
+        border-radius: 23px;
+      }
+      #gate,
+      #birthday { justify-content: space-evenly; }
+      .actions { display: grid; }
+      .actions .button { width: 100%; }
+      .birthday-card .actions,
+      #celebration .actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .memory-stage { margin-right: -14px; margin-left: -14px; }
+      .memory-item { flex-basis: 96%; }
+      #memories,
+      #dreams { justify-content: flex-start; }
+      #memories .memory-stage,
+      #dreams .memory-stage {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        min-height: 0;
+      }
+      #memories .memory-track,
+      #dreams .memory-track {
+        flex: 1;
+        align-items: stretch;
+        min-height: 0;
+      }
+      #memories .memory-item,
+      #dreams .memory-item {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      #memories .memory-item img,
+      #dreams .memory-item img {
+        flex: 1;
+        height: auto;
+        min-height: 0;
+        aspect-ratio: auto;
+      }
+      .surprise-reveal {
+        width: min(100%, 260px, calc(60dvh * 1080 / 2373));
+      }
+    }
+
+    @media (max-height: 700px) {
+      .card { padding: clamp(10px, 4vw, 20px); }
+      .sparkle { margin-bottom: 6px; font-size: 1.5rem; }
+      .birthday-copy { margin-bottom: 12px; }
+      .question { margin-bottom: 10px; font-size: 1rem; }
+      .page-back { margin-bottom: 8px; }
+      .memory-stage { margin-top: 10px; margin-bottom: 10px; }
+      .memory-track { padding-top: 18px; padding-bottom: 8px; }
+      .memory-item img { height: min(34dvh, 260px); }
+      .surprise-reveal {
+        width: min(100%, 260px, calc(40dvh * 1080 / 2373));
+        margin-top: 4px;
+        margin-bottom: 8px;
+      }
+    }
+
+    @media (max-height: 500px) {
+      #dreams h1 { line-height: 1; font-size: .65rem; }
+      #dreams h1 .dream-title-highlight { font-size: 1.4em; }
+      .memory-stage { margin-top: 8px; margin-bottom: 8px; padding-top: 14px; padding-bottom: 10px; }
+      .memory-track { padding-top: 16px; padding-bottom: 6px; }
+      .memory-item img { height: min(27dvh, 200px); }
+    }
+
+    @media (max-height: 450px) {
+      .brand { display: none; }
+      .card { padding: 8px 12px; }
+      .sparkle { display: none; }
+      h1 { margin-bottom: 6px; font-size: clamp(1.4rem, 5vw, 2rem); }
+      .intro { margin-bottom: 12px; }
+      .code-form { gap: 6px; }
+      input { min-height: 42px; }
+      .button { min-height: 42px; padding: 9px 16px; }
+      .birthday-copy { margin-bottom: 8px; line-height: 1.3; }
+      .question { margin-bottom: 6px; }
+      .page-back { width: 36px; min-height: 36px; margin-bottom: 4px; }
+      #dreams h1 { line-height: 1; font-size: .65rem; }
+      #dreams h1 .dream-title-highlight { font-size: 1.4em; }
+      .memory-stage { margin-top: 6px; margin-bottom: 6px; padding-top: 10px; padding-bottom: 8px; }
+      .memory-track { padding-top: 14px; padding-bottom: 6px; }
+      .memory-item img { height: 24dvh; }
+      .surprise-reveal {
+        width: min(100%, 260px, calc(37dvh * 1080 / 2373));
+        margin-top: 2px;
+        margin-bottom: 4px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <p class="brand">A little birthday surprise</p>
+
+    <section class="card" id="gate" aria-labelledby="gate-title">
+      <span class="sparkle" aria-hidden="true">✦</span>
+      <h1 id="gate-title"><span>Small Gift</span></h1>
+      <p class="intro">Type a secret code to unlock your birthday surprise.</p>
+      <form class="code-form" id="code-form">
+        <label for="secret-code">Your secret code</label>
+        <input id="secret-code" name="code" type="text" minlength="4" autocomplete="off" required
+          aria-describedby="code-error" placeholder="Enter your secret code">
+        <p class="error" id="code-error" role="alert"></p>
+        <button class="button primary" type="submit">Unlock the fun</button>
+      </form>
+    </section>
+
+    <section class="card birthday-card hidden" id="birthday" aria-labelledby="birthday-title">
+      <span class="sparkle" aria-hidden="true">✦</span>
+      <h1 id="birthday-title" tabindex="-1">Happy Birthday,<br><span>Handsome!</span></h1>
+      <p class="birthday-copy">Today is your official excuse to eat some SUGAR 😉</p>
+      <p class="birthday-copy">TALK with your original INBUILD Loud Mic 😉</p>
+      <p class="birthday-copy">MAYBE POKE or IRRITATE me a little 😂</p>
+      <p class="question">I made something for you. Are you ready to see it?</p>
+      <div class="actions">
+        <button class="button primary" id="yes-button" type="button">Absolutely!</button>
+        <button class="button secondary" id="not-yet-button" type="button">Not yet</button>
+      </div>
+    </section>
+
+    <section class="card hidden" id="celebration" aria-labelledby="celebration-title">
+      <button class="button secondary page-back" id="back-button" type="button" aria-label="Back to the birthday card" title="Back to the birthday card">←</button>
+      <span class="sparkle" aria-hidden="true">✦</span>
+      <h1 id="celebration-title">Surprise</h1>
+      <div class="surprise-reveal" id="surprise-reveal">
+        <img class="birthday-message-image" src="1.jpg" alt="A personalized Happy Birthday collage with a photo and birthday decorations" aria-hidden="true">
+        <div class="cake-wrap">
+        <svg class="birthday-cake" viewBox="0 0 260 220" role="img" aria-labelledby="cake-title cake-desc">
+          <title id="cake-title">A birthday cake with dancing candle flames</title>
+          <desc id="cake-desc">A three-layer pink and purple birthday cake with animated candles and sparkles.</desc>
+          <defs>
+            <linearGradient id="cake-base" x1="0" x2="1" y1="0" y2="1">
+              <stop stop-color="#ff9ebd"/>
+              <stop offset="1" stop-color="#e95f9a"/>
+            </linearGradient>
+            <linearGradient id="cake-top" x1="0" x2="1" y1="0" y2="1">
+              <stop stop-color="#ffe9ad"/>
+              <stop offset="1" stop-color="#ffbd8a"/>
+            </linearGradient>
+            <linearGradient id="cake-plate" x1="0" x2="0" y1="0" y2="1">
+              <stop stop-color="#f9f2ff"/>
+              <stop offset="1" stop-color="#b69ce8"/>
+            </linearGradient>
+          </defs>
+          <path d="M46 184h168l-13 18H59z" fill="url(#cake-plate)" stroke="#6f568a" stroke-width="4" stroke-linejoin="round"/>
+          <ellipse cx="130" cy="184" rx="88" ry="13" fill="#d8c6f2" stroke="#6f568a" stroke-width="4"/>
+          <path d="M65 145c0-12 29-22 65-22s65 10 65 22v35c0 11-29 20-65 20s-65-9-65-20z" fill="url(#cake-base)" stroke="#754568" stroke-width="4"/>
+          <ellipse cx="130" cy="145" rx="65" ry="21" fill="#ffe6f0" stroke="#754568" stroke-width="4"/>
+          <path d="M65 146c11 7 17 8 24 5 8-4 12-4 19 1 8 6 14 7 22 1 7-5 13-5 21 0 8 5 14 4 22-1 8-5 14-4 24 2" fill="none" stroke="#ff8fb4" stroke-width="7" stroke-linecap="round"/>
+          <path d="M83 108c0-9 21-16 47-16s47 7 47 16v32c0 10-21 18-47 18s-47-8-47-18z" fill="#a47be4" stroke="#61427f" stroke-width="4"/>
+          <ellipse cx="130" cy="108" rx="47" ry="16" fill="#f4d8ff" stroke="#61427f" stroke-width="4"/>
+          <path d="M83 109c8 5 13 6 19 3 6-4 10-3 16 1 6 4 11 5 17 1 6-4 10-4 16 0 6 4 12 3 18-1" fill="none" stroke="#cb9df2" stroke-width="6" stroke-linecap="round"/>
+          <path d="M105 77c0-7 11-12 25-12s25 5 25 12v20c0 8-11 13-25 13s-25-5-25-13z" fill="url(#cake-top)" stroke="#8e5873" stroke-width="4"/>
+          <ellipse cx="130" cy="77" rx="25" ry="11" fill="#fff0c9" stroke="#8e5873" stroke-width="4"/>
+          <path d="M105 78c5 3 8 4 12 1 4-2 8-2 12 1 5 3 8 3 12 0 4-3 8-2 14 1" fill="none" stroke="#ffc685" stroke-width="5" stroke-linecap="round"/>
+          <g stroke="#6a4f83" stroke-width="3">
+            <path d="M104 64V42" stroke="#78d8d1" stroke-width="8" stroke-linecap="round"/>
+            <path d="M130 61V34" stroke="#ff79a8" stroke-width="8" stroke-linecap="round"/>
+            <path d="M156 64V42" stroke="#ffd36c" stroke-width="8" stroke-linecap="round"/>
+          </g>
+          <g class="cake-flame">
+            <path d="M104 38c-11-10 5-15 2-27 14 10 17 20 5 28z" fill="#ff9b42" stroke="#e45657" stroke-width="2"/>
+            <path d="M107 36c-4-5 2-8 3-12 5 6 5 10 0 13z" fill="#fff18b"/>
+          </g>
+          <g class="cake-flame">
+            <path d="M130 30c-12-11 5-17 2-29 14 11 18 21 5 30z" fill="#ff9b42" stroke="#e45657" stroke-width="2"/>
+            <path d="M133 28c-4-5 2-8 3-13 5 7 5 11 0 14z" fill="#fff18b"/>
+          </g>
+          <g class="cake-flame">
+            <path d="M156 38c-11-10 5-15 2-27 14 10 17 20 5 28z" fill="#ff9b42" stroke="#e45657" stroke-width="2"/>
+            <path d="M159 36c-4-5 2-8 3-12 5 6 5 10 0 13z" fill="#fff18b"/>
+          </g>
+          <g fill="#ffd66b">
+            <path class="cake-sparkle" d="m42 87 4 10 10 4-10 4-4 10-4-10-10-4 10-4z"/>
+            <path class="cake-sparkle" d="m213 72 3 8 8 3-8 3-3 8-3-8-8-3 8-3z"/>
+            <path class="cake-sparkle" d="m207 127 2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>
+          </g>
+          <g fill="#fffaf1">
+            <circle cx="94" cy="146" r="3"/><circle cx="130" cy="151" r="3"/><circle cx="166" cy="145" r="3"/>
+            <circle cx="105" cy="111" r="2.5"/><circle cx="155" cy="105" r="2.5"/>
+          </g>
+        </svg>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="button primary" id="open-memory-lane-button" type="button">Open memory lane</button>
+        <button class="button primary" id="open-dream-lane-button" type="button">Open dream lane</button>
+      </div>
+    </section>
+
+    <section class="card hidden" id="memories" aria-labelledby="memories-title">
+      <button class="button secondary page-back" id="memories-back-button" type="button" aria-label="Back to the surprise" title="Back to the surprise">←</button>
+      <h1 id="memories-title" tabindex="-1"><span>Memories</span></h1>
+      <div class="memory-stage">
+        <div class="memory-track" id="memory-track" aria-label="Birthday memory photos">
+        <figure class="memory-item">
+          <img src="2.jpg" alt="Birthday memory 2" loading="lazy">
+        </figure>
+        <figure class="memory-item">
+          <img src="3.jpg" alt="Birthday memory 3" loading="lazy">
+        </figure>
+        <figure class="memory-item">
+          <img src="4.jpg" alt="Birthday memory 4" loading="lazy">
+        </figure>
+        <figure class="memory-item">
+          <img src="5.jpg" alt="Birthday memory 5" loading="lazy">
+        </figure>
+        <figure class="memory-item">
+          <img src="6.jpg" alt="Birthday memory 6" loading="lazy">
+        </figure>
+        </div>
+        <div class="memory-controls" aria-label="Memory photo navigation">
+          <button class="memory-arrow" id="memory-previous" type="button" aria-label="Previous photo">‹</button>
+          <span class="memory-count" id="memory-count" aria-live="polite">1 / 5</span>
+          <button class="memory-arrow" id="memory-next" type="button" aria-label="Next photo">›</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card hidden" id="dreams" aria-labelledby="dreams-title">
+      <button class="button secondary page-back" id="dreams-back-button" type="button" aria-label="Back to the surprise" title="Back to the surprise">←</button>
+      <h1 id="dreams-title" tabindex="-1"><span class="dream-title-highlight">AI imagined it</span><br><br><span class="dream-title-support">You will live it</span><br><span class="dream-title-support">Just a matter of time</span></h1>
+      <div class="memory-stage">
+        <div class="memory-track" id="dream-track" aria-label="Dream lane placeholders">
+          <figure class="memory-item dream-item">
+            <img src="surfing.jpg" alt="Birthday memory 1" loading="lazy">
+            <figcaption class="dream-caption">You will ride the waves you've dreamed of</figcaption>
+          </figure>
+          <figure class="memory-item dream-item">
+            <img src="wakeboarding.jpg" alt="Birthday memory 2" loading="lazy">
+            <figcaption class="dream-caption">You will glide across the water like a pro</figcaption>
+          </figure>
+          <figure class="memory-item dream-item">
+            <img src="snorkeling.jpg" alt="Birthday memory 3" loading="lazy">
+            <figcaption class="dream-caption">You will explore the world beneath the waves</figcaption>
+          </figure>
+          <figure class="memory-item dream-item">
+            <img src="paragliding.jpg" alt="Birthday memory 4" loading="lazy">
+            <figcaption class="dream-caption">You will spread your wings and fly</figcaption>
+          </figure>
+          <figure class="memory-item dream-item">
+            <img src="riding_horse.jpg" alt="Birthday memory 5" loading="lazy">
+            <figcaption class="dream-caption">You will ride a horse through the countryside</figcaption>
+          </figure>
+          <figure class="memory-item dream-item">
+            <img src="ladakh.jpg" alt="Birthday memory 6" loading="lazy">
+            <figcaption class="dream-caption">You will conquer the roads of Ladakh</figcaption>
+          </figure>
+          <figure class="memory-item dream-item">
+            <img src="Adventure_activities_collage.jpg" alt="Birthday memory 7" loading="lazy">
+            <figcaption class="dream-caption">You will embark on unforgettable adventures</figcaption>
+          </figure>
+        </div>
+        <div class="memory-controls" aria-label="Dream lane navigation">
+          <button class="memory-arrow" id="dream-previous" type="button" aria-label="Previous dream">‹</button>
+          <span class="memory-count" id="dream-count" aria-live="polite">1 / 8</span>
+          <button class="memory-arrow" id="dream-next" type="button" aria-label="Next dream">›</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="success hidden" id="confetti" aria-hidden="true"></div>
+
+  <script>
+    const codeForm = document.querySelector("#code-form");
+    const codeInput = document.querySelector("#secret-code");
+    const codeError = document.querySelector("#code-error");
+    const gate = document.querySelector("#gate");
+    const birthday = document.querySelector("#birthday");
+    const celebration = document.querySelector("#celebration");
+    const memories = document.querySelector("#memories");
+    const dreams = document.querySelector("#dreams");
+    const surpriseReveal = document.querySelector("#surprise-reveal");
+    const cakeWrap = document.querySelector(".cake-wrap");
+    const birthdayMessageImage = document.querySelector(".birthday-message-image");
+    const cakeSvg = document.querySelector(".birthday-cake");
+    const notYetReaction = document.querySelector("#not-yet-reaction");
+    const confetti = document.querySelector("#confetti");
+    let cakeRevealTimer;
+
+    codeForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!codeInput.checkValidity()) {
+        codeError.textContent = "Your secret code needs at least four characters.";
+        codeInput.reportValidity();
+        return;
+      }
+      if (codeInput.value.trim().toLowerCase() !== "sanjay") {
+        codeError.textContent = "That code isn't quite right. Try again.";
+        return;
+      }
+      codeError.textContent = "";
+      gate.classList.add("hidden");
+      birthday.classList.remove("hidden");
+      document.querySelector("#birthday-title").focus({ preventScroll: true });
+    });
+
+    codeInput.addEventListener("input", () => {
+      codeError.textContent = "";
+    });
+
+    document.querySelector("#yes-button").addEventListener("click", () => {
+      notYetButton.classList.add("hidden");
+      birthday.classList.add("hidden");
+      celebration.classList.remove("hidden");
+      startCakeReveal();
+      document.querySelector("#celebration-title").focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    const notYetButton = document.querySelector("#not-yet-button");
+    const yesButton = document.querySelector("#yes-button");
+
+    notYetButton.addEventListener("pointerenter", (event) => {
+      if (event.pointerType === "mouse") {
+        dodgeNotYetButton(event);
+      }
+    });
+
+    notYetButton.addEventListener("click", () => {
+      notYetReaction.classList.remove("hidden");
+    });
+
+    function dodgeNotYetButton(event) {
+      document.body.append(notYetButton);
+      notYetButton.classList.add("evasive");
+      const buttonRect = notYetButton.getBoundingClientRect();
+      const yesRect = yesButton.getBoundingClientRect();
+      const margin = 12;
+      const maxLeft = Math.max(margin, window.innerWidth - buttonRect.width - margin);
+      const maxTop = Math.max(margin, window.innerHeight - buttonRect.height - margin);
+      let left = margin;
+      let top = margin;
+
+      for (let attempt = 0; attempt < 40; attempt += 1) {
+        left = margin + Math.random() * (maxLeft - margin);
+        top = margin + Math.random() * (maxTop - margin);
+        const overlapsYes = left < yesRect.right + 18
+          && left + buttonRect.width > yesRect.left - 18
+          && top < yesRect.bottom + 18
+          && top + buttonRect.height > yesRect.top - 18;
+        const tooCloseToPointer = Math.hypot(
+          left + buttonRect.width / 2 - event.clientX,
+          top + buttonRect.height / 2 - event.clientY
+        ) < 110;
+
+        if (!overlapsYes && !tooCloseToPointer) {
+          break;
+        }
+      }
+
+      notYetButton.style.left = `${left}px`;
+      notYetButton.style.top = `${top}px`;
+    }
+
+    document.querySelector("#back-button").addEventListener("click", () => {
+      resetCakeReveal();
+      celebration.classList.add("hidden");
+      birthday.classList.remove("hidden");
+      yesButton.after(notYetButton);
+      notYetButton.classList.remove("evasive", "hidden");
+      notYetButton.style.removeProperty("left");
+      notYetButton.style.removeProperty("top");
+      document.querySelector("#birthday-title").focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    function startCakeReveal() {
+      resetCakeReveal();
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      cakeRevealTimer = window.setTimeout(() => {
+        for (const clipClass of ["cake-split-piece cake-split-top", "cake-split-piece cake-split-bottom"]) {
+          const piece = cakeSvg.cloneNode(true);
+          piece.classList.remove("birthday-cake");
+          piece.classList.add(...clipClass.split(" "));
+          piece.setAttribute("aria-hidden", "true");
+          piece.removeAttribute("role");
+          piece.removeAttribute("aria-labelledby");
+          piece.querySelectorAll("title, desc").forEach((node) => node.remove());
+          cakeWrap.append(piece);
+        }
+        birthdayMessageImage.setAttribute("aria-hidden", "false");
+        requestAnimationFrame(() => surpriseReveal.classList.add("is-opening"));
+        launchConfetti();
+      }, reducedMotion ? 50 : 1400);
+    }
+
+    function resetCakeReveal() {
+      window.clearTimeout(cakeRevealTimer);
+      surpriseReveal.classList.remove("is-opening");
+      cakeWrap.querySelectorAll(".cake-split-piece").forEach((piece) => piece.remove());
+      birthdayMessageImage.setAttribute("aria-hidden", "true");
+    }
+
+    document.querySelector("#open-memory-lane-button").addEventListener("click", () => {
+      celebration.classList.add("hidden");
+      memories.classList.remove("hidden");
+      document.querySelector("#memories-title").focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    document.querySelector("#memories-back-button").addEventListener("click", () => {
+      memories.classList.add("hidden");
+      celebration.classList.remove("hidden");
+      document.querySelector("#celebration-title").focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    document.querySelector("#open-dream-lane-button").addEventListener("click", () => {
+      celebration.classList.add("hidden");
+      dreams.classList.remove("hidden");
+      document.querySelector("#dreams-title").focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    document.querySelector("#dreams-back-button").addEventListener("click", () => {
+      dreams.classList.add("hidden");
+      celebration.classList.remove("hidden");
+      document.querySelector("#celebration-title").focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    function setupGallery(trackId, countId, previousId, nextId, itemLabel) {
+      const track = document.querySelector(`#${trackId}`);
+      const count = document.querySelector(`#${countId}`);
+      const cards = Array.from(track.querySelectorAll(".memory-item"));
+      let activeIndex = 0;
+
+      function updateCount() {
+        count.textContent = `${activeIndex + 1} / ${cards.length}`;
+      }
+
+      function showCard(index) {
+        activeIndex = (index + cards.length) % cards.length;
+        cards[activeIndex].scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+        updateCount();
+      }
+
+      document.querySelector(`#${previousId}`).addEventListener("click", () => {
+        showCard(activeIndex - 1);
+      });
+
+      document.querySelector(`#${nextId}`).addEventListener("click", () => {
+        showCard(activeIndex + 1);
+      });
+
+      track.addEventListener("scroll", () => {
+        const trackCenter = track.scrollLeft + track.clientWidth / 2;
+        activeIndex = cards.reduce((closestIndex, card, index) => {
+          const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+          const closestCenter = cards[closestIndex].offsetLeft + cards[closestIndex].offsetWidth / 2;
+          return Math.abs(cardCenter - trackCenter) < Math.abs(closestCenter - trackCenter)
+            ? index
+            : closestIndex;
+        }, 0);
+        updateCount();
+      }, { passive: true });
+
+      track.setAttribute("aria-label", itemLabel);
+      updateCount();
+    }
+
+    setupGallery("memory-track", "memory-count", "memory-previous", "memory-next", "Birthday memory photos");
+    setupGallery("dream-track", "dream-count", "dream-previous", "dream-next", "Dream lane cards");
+
+    function launchConfetti() {
+      const colors = ["#ff76a8", "#ffd66b", "#83e6df", "#b58bff", "#fffaf1"];
+      confetti.replaceChildren();
+      confetti.classList.remove("hidden");
+      for (let index = 0; index < 52; index += 1) {
+        const piece = document.createElement("span");
+        piece.className = "confetti";
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.setProperty("--piece-color", colors[index % colors.length]);
+        piece.style.setProperty("--delay", `${Math.random() * 0.65}s`);
+        piece.style.setProperty("--duration", `${2.2 + Math.random() * 1.5}s`);
+        piece.style.setProperty("--drift", `${Math.random() * 180 - 90}px`);
+        confetti.append(piece);
+      }
+      window.setTimeout(() => confetti.classList.add("hidden"), 4400);
+    }
+  </script>
+</body>
+</html>
